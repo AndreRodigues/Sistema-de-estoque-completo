@@ -13,9 +13,10 @@ FILE *arquivo_de_login;
 
 void menu();
 void cadastrar_usuario();
-int checar_cadastros(char user);
+int checar_cadastros(char user[50]);
+void menu_ou_sair();
 
-void main(){
+int main(){
 
         setlocale(LC_ALL,"Portuguese");
 
@@ -27,7 +28,7 @@ void main(){
 
         menu();
 
-    system("pause");
+    return 0;
 }
 
 void menu(){
@@ -57,62 +58,119 @@ void menu(){
 void cadastrar_usuario(){
 
     struct Cadastro c;
-    
 
     char usuario[50],senha[16];
-
-        
-        arquivo_de_cadastro = fopen("login.txt", "wb");
-
-            system("cls");
-
-            printf("CADASTRO ARCLINE\n\n");
-            printf("CASO DESEJE RETORNAR AO MENU, DIGITE 'menu', PARA SAIR, DIGITE 'sair'\n\n");
-
-            getchar();
-            printf("USUARIO: ");
-            scanf("%[^\n]s", usuario);
-            getchar();
-
-            arquivo_de_cadastro = fopen("cadastros.txt", "rb");
-
-            fread(&c, sizeof(struct Cadastro),1,arquivo_de_cadastro);
-
-            do{
-
-                if (strcmp(c.nome,usuario) == 0)
-                {
+    int x;
+                
+      
+                do{
                     system("cls");
-                    printf("USUARIO JÁ CADASTRADO EM NOSSO SISTEMA\nDIGITE NOVAMENTE POR FAVOR\n\n");
-                    cadastrar_usuario();
-                    
-                }else{
+                    printf("CADASTRO ARCLINE\n\n");
+                    if(x == 1){
+                        printf("USUARIO JA CADASTRADO, DIGITE NOVAMENTE\n");
+                    }
+                printf("CASO DESEJE RETORNAR AO MENU, DIGITE 'menu', PARA SAIR, DIGITE 'sair'\n\n");
 
+                getchar();
+                printf("USUARIO: ");
+                scanf("%[^\n]s", usuario);
+
+                if(strcmp(usuario,"menu")== 0){
+                    system("cls");
+                    menu();
                 }
 
-                    fread(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+                if (strcmp(usuario, "sair") == 0)
+                {
+                    system("cls");
+                    printf("SISTEMA ENCERRADO\n\n");
+                    exit(0);
+                }
 
-            }while(!feof(arquivo_de_cadastro));
-           
-            fclose(arquivo_de_cadastro);
-            
+                x = checar_cadastros(usuario);
 
-            printf("SENHA (ATÉ 16 DIGITOS): ");
-            scanf("%[^\n]s", senha);
-            getchar();
+                }while(x == 1);
+              
+                getchar();
+                printf("SENHA: ");
+                scanf("%[^\n]s", senha);
+                getchar();
 
-            strcpy(c.nome,usuario);
-            strcpy(c.senha,senha);
+                if (strcmp(senha, "menu") == 0)
+                {
+                    system("cls");
+                    menu();
+                }
 
-            arquivo_de_cadastro = fopen("cadastros.txt", "ab");
+                if (strcmp(senha, "sair") == 0)
+                {
+                    system("cls");
+                    printf("SISTEMA ENCERRADO\n\n");
+                    exit(0);
+                }
 
-            fwrite(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+                strcpy(c.nome,usuario);
+                strcpy(c.senha,senha);
 
-            fclose(arquivo_de_cadastro);
+                arquivo_de_cadastro = fopen("cadastros.txt", "ab");
 
-            printf("CADASTRO EFETUADO COM SUCESSO");
+                fwrite(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+
+                fclose(arquivo_de_cadastro);
+
+                printf("CADASTRO EFETUADO COM SUCESSO\n\n");
+
+                menu_ou_sair();
 }
 
+int checar_cadastros(char user[50]){
 
+    arquivo_de_cadastro = fopen("cadastros.txt", "rb");
 
+    struct Cadastro c;
 
+    fread(&c, sizeof(struct Cadastro),1,arquivo_de_cadastro);
+
+    do{
+        
+        if(strcmp(c.nome,user)==0){
+            return 1;
+        }
+
+        fread(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+    }while(!feof(arquivo_de_cadastro));
+
+    fclose(arquivo_de_cadastro);
+
+    return 2;
+}
+
+void menu_ou_sair(){
+
+    int op;
+
+        printf("DIGITE 1 PARA VOLTAR AO MENU\nDIGITE 2 PARA SAIR\n\nDIGITE AQUI: ");
+        scanf("%d", &op);
+
+        switch(op){
+            case 1:
+                system("cls");
+                menu();
+            break;
+
+            case 2:
+                system("cls");
+                printf("SISTEMA ENCERRADO\n\n");
+                exit(0);
+            break;
+            
+
+            default:
+                system("cls");
+                printf("OPÇÃO INVALIDA, DIGITE NOVAMENTE ABAIXO\n\n");
+                menu_ou_sair();
+                
+                break;
+        }
+
+}
