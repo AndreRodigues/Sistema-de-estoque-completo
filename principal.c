@@ -12,7 +12,10 @@ FILE *arquivo_de_cadastro;
 FILE *arquivo_de_login;
 
 void menu();
+void menu_principal();
 void cadastrar_usuario();
+void login();
+int checar_login(char user[50],char pass[16]);
 int checar_cadastros(char user[50]);
 void menu_ou_sair();
 
@@ -37,7 +40,8 @@ void menu(){
 
     printf("| SISTEMA DE ESTOQUE ARCLINE |\n");
     printf("|____________________________|\n");
-    printf("| DIGITE 1 PARA SE CADASTRAR |");
+    printf("| DIGITE 1 PARA SE CADASTRAR |\n");
+    printf("| DIGITE 2 PARA FAZER LOGIN  |");
     printf("\n|____________________________|\n| DIGITE AQUI: ");
     scanf("%d", &opcao);
 
@@ -45,6 +49,9 @@ void menu(){
     {
     case 1:
         cadastrar_usuario();
+        break;
+    case 2:
+        login();
         break;
 
     default:
@@ -62,7 +69,7 @@ void cadastrar_usuario(){
     char usuario[50],senha[16];
     int x;
                 
-      
+            
                 do{
                     system("cls");
                     printf("CADASTRO ARCLINE\n\n");
@@ -118,6 +125,7 @@ void cadastrar_usuario(){
 
                 fclose(arquivo_de_cadastro);
 
+                system("cls");
                 printf("CADASTRO EFETUADO COM SUCESSO\n\n");
 
                 menu_ou_sair();
@@ -136,6 +144,7 @@ int checar_cadastros(char user[50]){
         if(strcmp(c.nome,user)==0){
             return 1;
         }
+        
 
         fread(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
     }while(!feof(arquivo_de_cadastro));
@@ -173,4 +182,66 @@ void menu_ou_sair(){
                 break;
         }
 
+}
+
+void login(){
+
+    char usuario[50],senha[16];
+    int x;
+    getchar();
+    do{
+    system("cls");
+    printf("TELA DE LOGIN ARCLINE\n\n");
+    if(x==1){
+        printf("USUARIO OU SENHA INCORRETOS\n\n");
+    }
+    
+    printf("USUARIO: ");
+    scanf("%[^\n]s", usuario);
+    getchar();
+    printf("\nSENHA: ");
+    scanf("%[^\n]s", senha);
+    getchar();
+
+    x = checar_login(usuario,senha);
+
+    }while(x == 1);
+
+    menu_principal();
+}
+
+int checar_login(char user[50], char pass[16]){
+    
+    struct Cadastro c;
+
+    arquivo_de_cadastro = fopen("cadastros.txt", "rb");
+    
+    fread(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+
+    do
+    {
+
+        if (strcmp(c.nome, user) == 0 && strcmp(c.senha, pass) == 0)
+        {
+            return 2;
+        }
+
+        fread(&c, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+    } while (!feof(arquivo_de_cadastro));
+
+        return 1;
+}
+
+void menu_principal(){
+
+    int opcao;
+
+    system("cls");
+
+    printf("| SISTEMA DE ESTOQUE ARCLINE |\n");
+    printf("|____________________________|\n");
+    printf("| DIGITE 1 CADASTRAR PRODUTOS|\n");
+    printf("| DIGITE 2 SAIDA DE PRODUTOS |");
+    printf("\n|____________________________|\n| DIGITE AQUI: ");
+    scanf("%d", &opcao);
 }
