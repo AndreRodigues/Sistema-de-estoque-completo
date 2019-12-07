@@ -9,27 +9,28 @@ struct Cadastro
 
 
 FILE *arquivo_de_cadastro;
-FILE *arquivo_de_login;
 
-void menu();
-void menu_principal();
-void cadastrar_usuario();
-void login();
-int checar_login(char user[50],char pass[16]);
-int checar_cadastros(char user[50]);
-void menu_ou_sair();
+
+void menu();//menu inicial do sistema
+void menu_principal();//menu principal do sistema
+void cadastrar_usuario();//cadastra novos usuarios
+void login();//faz o login de usuarios já cadastrados
+int checar_login(char user[50],char pass[16]);//chaca se o login exixte
+int checar_cadastros(char user[50]);//checa se o cadastros exiete
+void menu_ou_sair();//menu de opão de retornar ao menu inicial do sistema ou sair do mesmo
 
 int main(){
 
         setlocale(LC_ALL,"Portuguese");
 
         arquivo_de_cadastro = fopen("cadastros.txt","ab");
-        arquivo_de_login = fopen("login.txt", "ab");
+        
 
         fclose(arquivo_de_cadastro);
-        fclose(arquivo_de_login);
+        
+        //acima cria o arquivo caso seja a primeira vez que o sistema será usado
 
-        menu();
+        menu();//chama o procedimento de menu inicia do sistema
 
     return 0;
 }
@@ -38,11 +39,12 @@ void menu(){
 
     int opcao;
 
-    printf("| SISTEMA DE ESTOQUE ARCLINE |\n");
-    printf("|____________________________|\n");
-    printf("| DIGITE 1 PARA SE CADASTRAR |\n");
-    printf("| DIGITE 2 PARA FAZER LOGIN  |");
-    printf("\n|____________________________|\n| DIGITE AQUI: ");
+    printf("| SISTEMA DE ESTOQUE ARCLINE   |\n");
+    printf("|______________________________|\n");
+    printf("| DIGITE 1 PARA SE CADASTRAR   |\n");
+    printf("| DIGITE 2 PARA FAZER LOGIN    |\n");
+    printf("| DIGITE 3 PARA RECUPERAR CONTA|");
+    printf("\n|______________________________|\n| DIGITE AQUI: ");
     scanf("%d", &opcao);
 
     switch (opcao)
@@ -60,6 +62,8 @@ void menu(){
         menu();
         break;
         }
+
+        //menu inicial do sistema
 }
 
 void cadastrar_usuario(){
@@ -70,10 +74,12 @@ void cadastrar_usuario(){
     int x;
                 
             
-                do{
+                do{//irá repetir esse laço enquanto o usuario digitar um cadastro ja utilizado
                     system("cls");
                     printf("CADASTRO ARCLINE\n\n");
                     if(x == 1){
+                        /*caso ele digite um usuario já cadastrado, o 'x' irá retornar o valor de 1
+                        e aparecerá a mensagem abaixo*/
                         printf("USUARIO JA CADASTRADO, DIGITE NOVAMENTE\n");
                     }
                 printf("CASO DESEJE RETORNAR AO MENU, DIGITE 'menu', PARA SAIR, DIGITE 'sair'\n\n");
@@ -81,7 +87,8 @@ void cadastrar_usuario(){
                 getchar();
                 printf("USUARIO: ");
                 scanf("%[^\n]s", usuario);
-
+                /*os dois 'if' abaixo irá comparar se o usuario quer voltar ao menu ou 
+                sair do sistema*/
                 if(strcmp(usuario,"menu")== 0){
                     system("cls");
                     menu();
@@ -94,6 +101,8 @@ void cadastrar_usuario(){
                     exit(0);
                 }
 
+                /*aqui se chama a função aonde checa se o usuario digitado já está
+                cadastrado no sistema*/
                 x = checar_cadastros(usuario);
 
                 }while(x == 1);
@@ -103,6 +112,8 @@ void cadastrar_usuario(){
                 scanf("%[^\n]s", senha);
                 getchar();
 
+                /*os dois 'if' abaixo irá comparar se o usuario quer voltar ao menu ou 
+                sair do sistema*/
                 if (strcmp(senha, "menu") == 0)
                 {
                     system("cls");
@@ -115,7 +126,8 @@ void cadastrar_usuario(){
                     printf("SISTEMA ENCERRADO\n\n");
                     exit(0);
                 }
-
+                    /*atricui o usuario e a senha a ser cadastrada, já que foi permitido chegar
+                    até aqui, checando os cadasrtros no arquico cadastros.txt*/
                 strcpy(c.nome,usuario);
                 strcpy(c.senha,senha);
 
@@ -133,6 +145,9 @@ void cadastrar_usuario(){
 
 int checar_cadastros(char user[50]){
 
+
+    /*nessa função ele checa se o usuario já esta cadastrado, caso esteja, a função
+    retormnará o valor 1 caso contrario retorna o valor 2*/
     arquivo_de_cadastro = fopen("cadastros.txt", "rb");
 
     struct Cadastro c;
@@ -155,6 +170,9 @@ int checar_cadastros(char user[50]){
 }
 
 void menu_ou_sair(){
+
+    /*menu que pode ser chamado em varios momentos no sistema, no qual tem as opções
+    de retornar ao menu ou sair do sistema*/
 
     int op;
 
@@ -203,6 +221,9 @@ void login(){
     scanf("%[^\n]s", senha);
     getchar();
 
+    /*chama a função que checa se a senha ou usuarios estão cadastrados e correpondem um ao outro
+    e permite ou não o acesso ao menu proncipal do sistema*/
+
     x = checar_login(usuario,senha);
 
     }while(x == 1);
@@ -212,6 +233,12 @@ void login(){
 
 int checar_login(char user[50], char pass[16]){
     
+
+    /*
+    Essa função checa se o usuario e a senha digitada pelo usuario correspondem de forma correta,
+    se sim retorna o valor 2, caso contrariom retorna o valor 1
+    */
+
     struct Cadastro c;
 
     arquivo_de_cadastro = fopen("cadastros.txt", "rb");
@@ -233,6 +260,8 @@ int checar_login(char user[50], char pass[16]){
 }
 
 void menu_principal(){
+
+    /*procedimento aonde fica o menu principal do sistema, e chama as funcionalidades do mesmo*/
 
     int opcao;
 
