@@ -9,7 +9,7 @@ struct Cadastro
 
 
 FILE *arquivo_de_cadastro;
-
+FILE *arquivo_de_alteracao;
 
 void menu();//menu inicial do sistema
 void menu_principal();//menu principal do sistema
@@ -18,6 +18,7 @@ void login();//faz o login de usuarios já cadastrados
 int checar_login(char user[50],char pass[16]);//chaca se o login exixte
 int checar_cadastros(char user[50]);//checa se o cadastros exiete
 void menu_ou_sair();//menu de opão de retornar ao menu inicial do sistema ou sair do mesmo
+void alterar_senha();
 
 int main(){
 
@@ -54,6 +55,9 @@ void menu(){
         break;
     case 2:
         login();
+        break;
+    case 3:
+        alterar_senha();
         break;
 
     default:
@@ -157,6 +161,9 @@ int checar_cadastros(char user[50]){
     do{
         
         if(strcmp(c.nome,user)==0){
+
+            fclose(arquivo_de_cadastro);
+
             return 1;
         }
         
@@ -273,4 +280,90 @@ void menu_principal(){
     printf("| DIGITE 2 SAIDA DE PRODUTOS |");
     printf("\n|____________________________|\n| DIGITE AQUI: ");
     scanf("%d", &opcao);
+}
+
+void alterar_senha(){
+
+    struct Cadastro l;
+    struct Cadastro e;
+    char usuario[50],senha[16];
+    int x;
+
+    
+   
+            getchar();
+        do{
+        system("cls");
+        printf("ALTERAÇÃO DE SENHA ARCLINE\n\n");
+
+       /* if(x==2){
+            printf("USUARIO NÃO ENCONTRADO\n");
+        }*/
+
+        printf("CASO DESEJE RETORNAR AO MENU DIGITE 'menu' CASO DESEJE SAIR, DIGITE 'sair'\n\n");
+
+        printf("USUARIO: ");
+        scanf("%[^\n]s", usuario);
+        getchar();
+
+        x = checar_cadastros(usuario);
+
+        }while(x == 2);
+
+        printf("SENHA: ");
+        scanf("%[^\n]s", senha);
+        getchar();
+
+            arquivo_de_cadastro = fopen("cadastros.txt","rb");
+            arquivo_de_alteracao = fopen("rer.txt","wb");
+            //fclose(arquivo_de_alteracao);
+
+            fread(&l, sizeof(struct Cadastro),1,arquivo_de_cadastro);
+
+            do{
+               // arquivo_de_alteracao = fopen("rer.txt", "ab");
+                if(strcmp(l.nome,usuario)==0){
+                    
+                    strcpy(e.nome,l.nome);
+                    strcpy(e.senha,senha);
+
+                    
+                }else{
+                    strcpy(e.nome, l.nome);
+                    strcpy(e.senha, l.senha);
+                }
+
+                fwrite(&e, sizeof(struct Cadastro),1,arquivo_de_alteracao);
+                fread(&l, sizeof(struct Cadastro), 1, arquivo_de_cadastro);
+                //fclose(arquivo_de_alteracao);
+
+            }while(!feof(arquivo_de_cadastro));
+
+            fclose(arquivo_de_alteracao);
+            fclose(arquivo_de_cadastro);
+
+            arquivo_de_alteracao = fopen("rer.txt","rb");
+            arquivo_de_cadastro = fopen("cadastros.txt","wb");
+           // fclose(arquivo_de_cadastro);
+
+            fread(&l,sizeof(struct Cadastro),1,arquivo_de_alteracao);
+
+            do{
+                //arquivo_de_cadastro = fopen("cadastros.txt", "ab");
+                strcpy(e.nome,l.nome);
+                strcpy(e.senha,l.senha);
+
+                fwrite(&e, sizeof(struct Cadastro),1,arquivo_de_cadastro);
+                fread(&l, sizeof(struct Cadastro), 1, arquivo_de_alteracao);
+
+                //fclose(arquivo_de_cadastro);
+            }while(!feof(arquivo_de_alteracao));            
+
+                fclose(arquivo_de_cadastro);
+                fclose(arquivo_de_alteracao);
+       
+            system("cls");
+            printf("ALTERAÇÃO DE SENHA REALIZADA COM SUCESSO\n\n");
+
+            menu_ou_sair();
 }
