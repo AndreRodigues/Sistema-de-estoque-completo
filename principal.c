@@ -36,6 +36,7 @@ void consultar_estoque();
 void menu_principal_ou_sair();
 void alterar_produto();
 void apagar_produto();
+void fim_de_estoque();
 
     int main()
 {
@@ -569,7 +570,7 @@ void consultar_estoque(){
             }
 
         printf("DIGITE 1 PROCURAR PRODUTO ESPECIFICO\nDIGITE 2 PARA LISTAR TODOS OS PRODUTOS");
-        printf("\nDIGITE 3 PARA ALTERAR PRODUTO\nDIGITE 4 PARA APAGAR ALGUM PRODUTO\nDIGITE 5 PARA VER PRODUTOS FIM DE ESTOQUE");
+        printf("\nDIGITE 3 PARA ALTERAR PRODUTO\nDIGITE 4 PARA APAGAR ALGUM PRODUTO\nDIGITE 5 PARA VER PRODUTOS EM FIM DE ESTOQUE");
         printf("\nDIGITE 6 PARA VOLTAR AO MENU ANTERIOR");
         printf("\n\nDIGITE AQUI: ");
         scanf("%d", &op);
@@ -644,7 +645,7 @@ void consultar_estoque(){
         }
         else if (op == 5)
         {
-
+            fim_de_estoque();
         }
         else if (op == 6)
         {
@@ -845,7 +846,7 @@ void apagar_produto(){
         if (l.codigo == codigo)
         {
 
-            a==b;
+            
            
         }
         else
@@ -857,9 +858,11 @@ void apagar_produto(){
             e.valor_de_venda = l.valor_de_compra;
             e.qtd = l.qtd;
             e.codigo = l.codigo;
+
+            fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
         }
 
-        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+        
         fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
         //fclose(arquivo_de_alteracao);
 
@@ -898,5 +901,42 @@ void apagar_produto(){
     printf("PRODUTO APAGADO COM SUCESSO REALIZADA COM SUCESSO\n\n");
 
     menu_principal_ou_sair();
+}
+
+void fim_de_estoque(){
+
+    struct Produtos p;
+
+    system("cls");
+    printf("PRODUTOS EM FIM DE ESTOQUE\n\n");
+
+    arquivo_de_consultar_estoque = fopen("produtos.txt","rb");
+
+    fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+    do
+    {
+
+        if (p.qtd <= 10)
+        {
+            
+            printf("\nCODIGO DO PRODUTO: %d", p.codigo);
+            printf("\nNOME DO PRODUTO: %s", p.nome);
+            printf("\nMARCA DO PRODUTO: %s", p.marca);
+            printf("\nDESCRIÇÃO DO PRODUTO: %s", p.descricao);
+            printf("\nVALOR DE COMPRA DO PRODUTO: %.2f", p.valor_de_compra);
+            printf("\nVALOR DE VENDA DO PRODUTO: %.2f", p.valor_de_venda);
+            printf("\nQUANTIDADE DISPONIVEL DO PRODUTO: %d\n\n", p.qtd);
+
+            
+        }
+
+        fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+    } while (!feof(arquivo_de_consultar_estoque));
+    
+        fclose(arquivo_de_consultar_estoque);
+
+            menu_principal_ou_sair();
 }
 
