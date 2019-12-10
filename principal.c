@@ -7,9 +7,19 @@ struct Cadastro
     char nome[50],senha[50];
 };
 
+struct Produtos{
+
+    char nome[100],descricao[100],marca[50];
+    float valor_de_compra,valor_de_venda;
+    int codigo,qtd;
+
+};
+
 
 FILE *arquivo_de_cadastro;
 FILE *arquivo_de_alteracao;
+FILE *arquivo_de_cadastro_de_produtos;
+FILE *arquivo_de_consultar_estoque;
 
 void menu();//menu inicial do sistema
 void menu_principal();//menu principal do sistema
@@ -19,6 +29,10 @@ int checar_login(char user[50],char pass[16]);//chaca se o login exixte
 int checar_cadastros(char user[50]);//checa se o cadastros exiete
 void menu_ou_sair();//menu de opão de retornar ao menu inicial do sistema ou sair do mesmo
 void alterar_senha();
+void cadastro_de_produtos();
+int checar_produtos(int codigo);
+void consultar_estoque();
+void menu_principal_ou_sair();
 
 int main(){
 
@@ -44,7 +58,8 @@ void menu(){
     printf("|______________________________|\n");
     printf("| DIGITE 1 PARA SE CADASTRAR   |\n");
     printf("| DIGITE 2 PARA FAZER LOGIN    |\n");
-    printf("| DIGITE 3 PARA RECUPERAR CONTA|");
+    printf("| DIGITE 3 PARA RECUPERAR CONTA|\n");
+    printf("| DIGITE 4 PARA SAIR           |");
     printf("\n|______________________________|\n| DIGITE AQUI: ");
     scanf("%d", &opcao);
 
@@ -58,6 +73,11 @@ void menu(){
         break;
     case 3:
         alterar_senha();
+        break;
+    case 4:
+        system("cls");
+        printf("SISTEMA ENCERRADO\n\n");
+        exit(0);
         break;
 
     default:
@@ -274,12 +294,41 @@ void menu_principal(){
 
     system("cls");
 
-    printf("| SISTEMA DE ESTOQUE ARCLINE |\n");
-    printf("|____________________________|\n");
-    printf("| DIGITE 1 CADASTRAR PRODUTOS|\n");
-    printf("| DIGITE 2 SAIDA DE PRODUTOS |");
-    printf("\n|____________________________|\n| DIGITE AQUI: ");
+    printf("| SISTEMA DE ESTOQUE ARCLINE    |\n");
+    printf("|____________________________   |\n");
+    printf("| DIGITE 1 CADASTRAR PRODUTOS   |\n");
+    printf("| DIGITE 2 SAIDA DE PRODUTOS    |\n");
+    printf("| DIGITE 3 CONSULTAR ESTOQUE    |\n");
+    printf("| DIGITE 4 PARA SAIR DO SISTEMA |");
+    printf("\n|_______________________________|\n| DIGITE AQUI: ");
     scanf("%d", &opcao);
+
+        switch(opcao){
+            
+            case 1:
+                cadastro_de_produtos();
+                break;
+            case 2:
+
+                break;
+            case 3:
+                consultar_estoque();
+                break;
+            case 4:
+                system("cls");
+                printf("SISTEMA ENCERRADO\n\n");
+                exit(0);
+                break;
+            case 5:
+
+                break;
+
+            default:
+                system("cls");
+                printf("OPÇÃO INVALIDA, DIGITE NOVAMENTE\n\n");
+                menu_principal();
+            break;
+        }
 }
 
 void alterar_senha(){
@@ -366,4 +415,244 @@ void alterar_senha(){
             printf("ALTERAÇÃO DE SENHA REALIZADA COM SUCESSO\n\n");
 
             menu_ou_sair();
+}
+
+void cadastro_de_produtos(){
+
+    struct Produtos p;
+
+        float preco_sugerido,pc,pv;
+        int opcao,flag, x,cod,qtd;
+        char nome[100],desc[100],marca[50];
+
+            arquivo_de_cadastro_de_produtos = fopen("produtos.txt","ab");
+
+            fclose(arquivo_de_cadastro_de_produtos);
+
+        do{
+            //getchar();
+            system("cls");
+
+            printf("CADASTRO DE PRODUTOS\n\n");
+            printf("CASO DESEJE VOLTAR AO MENU, DIGITE 'menu' em qualque campo\n\n");
+            do{
+
+                if(x==2){
+                    system("cls");
+
+                    printf("CADASTRO DE PRODUTOS\n\n");
+                    printf("CASO DESEJE VOLTAR AO MENU, DIGITE 'menu' em qualque campo\n\n");
+                    printf("CODIGO JÁ PERTENCE A OUTRO PRODUTO, DIGITE NOVAMENTE ABAIXO\n\n");
+                }
+            printf("CODIGO DO PRODUTO: ");
+            scanf("%d", &cod);
+            
+                
+                x = checar_produtos(cod);
+
+            }while(x == 2);
+
+            flag = 2;
+
+            getchar();
+            printf("NOME DO PRODUTODO: ");
+            scanf("%[^\n]s", nome);
+            getchar();
+            printf("MARCA DE %s: ", nome);
+            scanf("%[^\n]s", marca);
+            getchar();
+            printf("DRECRIÇÃO DO %s: ", nome);
+            scanf("%[^\n]s", desc);
+            getchar();
+            printf("VALOR DE COMPRA DE %s: ", nome);
+            scanf("%f", &pc);
+            getchar();
+            printf("QAUNTIDADE DE %s: ",nome);
+            scanf("%d", &qtd);
+            getchar();
+
+            preco_sugerido = ((pc * 2) + (pc * 0.15));
+
+            printf("PREÇO SUGERIDO PARA %s : %.2f\n\n", nome, preco_sugerido);
+
+            printf("PREÇO DE VENDA DE %s: ", nome);
+            scanf("%f", &pv);
+            getchar();
+
+            strcpy(p.nome,nome);
+            strcpy(p.marca,marca);
+            strcpy(p.descricao,desc);
+            p.valor_de_compra = pc;
+            p.valor_de_venda = pv;
+            p.qtd = qtd;
+            p.codigo = cod;
+
+            arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "ab");
+
+            fwrite(&p, sizeof(struct Produtos),1,arquivo_de_cadastro_de_produtos);
+
+            fclose(arquivo_de_cadastro_de_produtos);
+
+            system("cls");
+            printf("PRODUTO CADASTRADO COM SUCESSO\n\n");
+            do
+            {
+                
+                if (flag == 1)
+                {
+                    system("cls");
+                    printf("OPÇÃO INVALIDA, DIGITE NOVAMENTE\n\n");
+                }
+
+                printf("DIGITE 1 PARA CADASTRAR OUTRO PRODUTO\nDIGITE 2 PARA VOLTAR AO MENU ANTERIOR\n\n");
+                printf("DIGITE AQUI: ");
+                scanf("%d", &opcao);
+
+                flag = 1;
+
+        }while(opcao < 1 || opcao > 2);
+
+        }while(opcao == 1);
+
+            
+
+            menu_principal();
+}
+
+int checar_produtos(int codigo){
+
+    struct Produtos p;
+
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "rb");
+
+    fread(&p, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+
+    do
+    {
+
+        if (p.codigo == codigo)
+        {
+
+            fclose(arquivo_de_cadastro_de_produtos);
+
+            return 2;
+        }
+
+        fread(&p, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+    } while (!feof(arquivo_de_cadastro_de_produtos));
+
+    fclose(arquivo_de_cadastro_de_produtos);
+
+    return 1;
+    
+    
+}
+
+void consultar_estoque(){
+        
+        struct Produtos p;
+
+        int op,opcao,codigo,flag;
+
+        system("cls");
+
+        arquivo_de_consultar_estoque = fopen("produtos.txt","rb");
+
+        do{
+
+            if(flag == 1){
+                system("cls");
+                printf("OPÇÃO INVALDIA, DIGITE NOVAMENTE ABAIXO\n\n");
+            }
+
+        printf("DIGITE 1 PROCURAR PRODUTO ESPECIFICO\nDIGITE 2 PARA LISTAR TODOS OS PRODUTOS\n\nDIGITE AQUI: ");
+        scanf("%d", &op);
+
+        flag = 1;
+
+        }while(op < 1 || op > 2);
+
+        if(op == 1){
+
+            system("cls");
+            printf("ESTOQUE ARCLINE\n\n");
+            printf("CODIGO DO PRODUTO QUE DESEJA CONSULTAR: ");
+            scanf("%d", &codigo);
+
+            fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+            do
+            {
+
+                    if(p.codigo == codigo){
+
+                        printf("\n\nCODIGO DO PRODUTO: %d", p.codigo);
+                        printf("\nNOME DO PRODUTO: %s", p.nome);
+                        printf("\nMARCA DO PRODUTO: %s", p.marca);
+                        printf("\nDESCRIÇÃO DO PRODUTO: %s", p.descricao);
+                        printf("\nVALOR DE COMPRA DO PRODUTO: %.2f", p.valor_de_compra);
+                        printf("\nVALOR DE VENDA DO PRODUTO: %.2f", p.valor_de_venda);
+                        printf("\nQUANTIDADE DISPONIVEL DO PRODUTO: %d\n\n", p.qtd);
+
+                        fclose(arquivo_de_consultar_estoque);
+
+                        menu_principal_ou_sair();
+                    }
+
+
+                fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+            } while (!feof(arquivo_de_consultar_estoque));
+
+        }else if(op == 2){
+
+            printf("PRODUTOS CADASTRADOS NO ESTOQUE ARCLINE\n\n");
+
+        fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+        do{
+
+            printf("CODIGO DO PRODUTO: %d", p.codigo);
+            printf("\nNOME DO PRODUTO: %s", p.nome);
+            printf("\nMARCA DO PRODUTO: %s", p.marca);
+            printf("\nDESCRIÇÃO DO PRODUTO: %s", p.descricao);
+            printf("\nVALOR DE COMPRA DO PRODUTO: %.2f", p.valor_de_compra);
+            printf("\nVALOR DE VENDA DO PRODUTO: %.2f", p.valor_de_venda);
+            printf("\nQUANTIDADE DISPONIVeL DO PRODUTO: %d\n\n", p.qtd);
+
+            fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+        }while(!feof(arquivo_de_consultar_estoque));
+            
+            fclose(arquivo_de_consultar_estoque);
+
+            menu_principal_ou_sair();
+        }
+}
+
+void menu_principal_ou_sair(){
+
+        int op,flag;
+
+        do{
+            if(flag == 1){
+                system("cls");
+                printf("OPÇÃO INVALIDA, DIGITE NOVAMENTE ABAIXO\n\n");
+            }
+ 
+        printf("DIGITE 1 PARA VOLTAR PARA O MENU PRINCIPAL\nDIGITE 2 PARA SAIR DO SISTEMA\n\nDIGITE AQUI: ");
+        scanf("%d", &op);
+
+        if(op == 1){
+            menu_principal();
+        }else if(op == 2){
+            system("cls");
+            printf("SISTEMA ENCERRADO\n\n");
+            exit(0);
+        }
+
+        flag = 1;
+
+        }while(op < 1 || op > 2);
+
 }
