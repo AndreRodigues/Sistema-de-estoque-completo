@@ -20,6 +20,7 @@ FILE *arquivo_de_cadastro;
 FILE *arquivo_de_alteracao;
 FILE *arquivo_de_cadastro_de_produtos;
 FILE *arquivo_de_consultar_estoque;
+FILE *arquivo_de_alterar_produtos;
 
 void menu();//menu inicial do sistema
 void menu_principal();//menu principal do sistema
@@ -33,19 +34,21 @@ void cadastro_de_produtos();
 int checar_produtos(int codigo);
 void consultar_estoque();
 void menu_principal_ou_sair();
+void alterar_produto();
+void apagar_produto();
 
-int main(){
+    int main()
+{
 
-        setlocale(LC_ALL,"Portuguese");
+    setlocale(LC_ALL, "Portuguese");
 
-        arquivo_de_cadastro = fopen("cadastros.txt","ab");
-        
+    arquivo_de_cadastro = fopen("cadastros.txt", "ab");
 
-        fclose(arquivo_de_cadastro);
-        
-        //acima cria o arquivo caso seja a primeira vez que o sistema será usado
+    fclose(arquivo_de_cadastro);
 
-        menu();//chama o procedimento de menu inicia do sistema
+    //acima cria o arquivo caso seja a primeira vez que o sistema será usado
+
+    menu(); //chama o procedimento de menu inicia do sistema
 
     return 0;
 }
@@ -565,12 +568,15 @@ void consultar_estoque(){
                 printf("OPÇÃO INVALDIA, DIGITE NOVAMENTE ABAIXO\n\n");
             }
 
-        printf("DIGITE 1 PROCURAR PRODUTO ESPECIFICO\nDIGITE 2 PARA LISTAR TODOS OS PRODUTOS\n\nDIGITE AQUI: ");
+        printf("DIGITE 1 PROCURAR PRODUTO ESPECIFICO\nDIGITE 2 PARA LISTAR TODOS OS PRODUTOS");
+        printf("\nDIGITE 3 PARA ALTERAR PRODUTO\nDIGITE 4 PARA APAGAR ALGUM PRODUTO\nDIGITE 5 PARA VER PRODUTOS FIM DE ESTOQUE");
+        printf("\nDIGITE 6 PARA VOLTAR AO MENU ANTERIOR");
+        printf("\n\nDIGITE AQUI: ");
         scanf("%d", &op);
 
         flag = 1;
 
-        }while(op < 1 || op > 2);
+        }while(op < 1 || op > 6);
 
         if(op == 1){
 
@@ -585,7 +591,7 @@ void consultar_estoque(){
             {
 
                     if(p.codigo == codigo){
-
+                        system("cls");
                         printf("\n\nCODIGO DO PRODUTO: %d", p.codigo);
                         printf("\nNOME DO PRODUTO: %s", p.nome);
                         printf("\nMARCA DO PRODUTO: %s", p.marca);
@@ -605,6 +611,8 @@ void consultar_estoque(){
             } while (!feof(arquivo_de_consultar_estoque));
 
         }else if(op == 2){
+
+            system("cls");
 
             printf("PRODUTOS CADASTRADOS NO ESTOQUE ARCLINE\n\n");
 
@@ -627,6 +635,20 @@ void consultar_estoque(){
             fclose(arquivo_de_consultar_estoque);
 
             menu_principal_ou_sair();
+        }else if(op == 3){
+            alterar_produto();
+        }
+        else if (op == 4)
+        {
+            apagar_produto();
+        }
+        else if (op == 5)
+        {
+
+        }
+        else if (op == 6)
+        {
+            menu_principal();
         }
 }
 
@@ -656,3 +678,225 @@ void menu_principal_ou_sair(){
         }while(op < 1 || op > 2);
 
 }
+
+void alterar_produto(){
+
+    struct Produtos l;
+    struct Produtos e;
+    int codigo,x = 3,qtd;
+    char nome[100],descricao[100],marca[50];
+    float pc,pv,ps;
+
+    
+    do
+    {
+        system("cls");
+        printf("ALTERAÇÃO DE PRODUTOS ARCLINE\n\n");
+
+         if(x==1){
+            printf("PRODUTO NÃO ENCONTRADO\n");
+        }
+
+        printf("CASO DESEJE RETORNAR AO MENU DIGITE 'menu' CASO DESEJE SAIR, DIGITE 'sair'\n\n");
+
+        printf("CODIGO: ");
+        scanf("%d", &codigo);
+        
+
+        x = checar_produtos(codigo);
+
+    } while (x == 1);
+
+    getchar();
+    printf("NOME DO PRODUTODO: ");
+    scanf("%[^\n]s", nome);
+    getchar();
+    printf("MARCA DE %s: ", nome);
+    scanf("%[^\n]s", marca);
+    getchar();
+    printf("DRECRIÇÃO DO %s: ", nome);
+    scanf("%[^\n]s", descricao);
+    getchar();
+    printf("VALOR DE COMPRA DE %s: ", nome);
+    scanf("%f", &pc);
+    getchar();
+    printf("QAUNTIDADE DE %s: ", nome);
+    scanf("%d", &qtd);
+    getchar();
+
+    ps = ((pc * 2) + (pc * 0.15));
+
+    printf("PREÇO SUGERIDO PARA %s : %.2f\n\n", nome, ps);
+
+    printf("PREÇO DE VENDA DE %s: ", nome);
+    scanf("%f", &pv);
+    getchar();
+
+    
+
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "rb");
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "wb");
+    //fclose(arquivo_de_alteracao);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+
+    do
+    {
+        // arquivo_de_alteracao = fopen("rer.txt", "ab");
+        if (l.codigo == codigo)
+        {
+
+            strcpy(e.nome, nome);
+            strcpy(e.marca, marca);
+            strcpy(e.descricao, descricao);
+            e.valor_de_compra = pc;
+            e.valor_de_venda = pv;
+            e.qtd = qtd;
+            e.codigo = codigo;
+        }
+        else
+        {
+            strcpy(e.nome, l.nome);
+            strcpy(e.marca, l.marca);
+            strcpy(e.descricao, l.descricao);
+            e.valor_de_compra = l.valor_de_compra;
+            e.valor_de_venda = l.valor_de_compra;
+            e.qtd = l.qtd;
+            e.codigo = l.codigo;
+        }
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        //fclose(arquivo_de_alteracao);
+
+    } while (!feof(arquivo_de_cadastro_de_produtos));
+
+    fclose(arquivo_de_alterar_produtos);
+    fclose(arquivo_de_cadastro_de_produtos);
+
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "rb");
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "wb");
+    // fclose(arquivo_de_cadastro);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+    do
+    {
+        //arquivo_de_cadastro = fopen("cadastros.txt", "ab");
+        strcpy(e.nome, l.nome);
+        strcpy(e.marca, l.marca);
+        strcpy(e.descricao, l.descricao);
+        e.valor_de_compra = l.valor_de_compra;
+        e.valor_de_venda = l.valor_de_compra;
+        e.qtd = l.qtd;
+        e.codigo = l.codigo;
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+        //fclose(arquivo_de_cadastro);
+    } while (!feof(arquivo_de_alterar_produtos));
+
+    fclose(arquivo_de_cadastro_de_produtos);
+    fclose(arquivo_de_alterar_produtos);
+
+    system("cls");
+    printf("ALTERAÇÃO DE PRODUTO REALIZADA COM SUCESSO\n\n");
+
+    menu_principal_ou_sair();
+}
+
+void apagar_produto(){
+   
+    struct Produtos l;
+    struct Produtos e;
+    int codigo, x = 3, qtd,a,b;
+   
+
+    do
+    {
+        system("cls");
+        printf("APAGAR PRODUTOS ARCLINE\n\n");
+
+        if (x == 1)
+        {
+            printf("PRODUTO NÃO ENCONTRADO\n");
+        }
+
+        printf("CASO DESEJE RETORNAR AO MENU DIGITE 'menu' CASO DESEJE SAIR, DIGITE 'sair'\n\n");
+
+        printf("CODIGO: ");
+        scanf("%d", &codigo);
+
+        x = checar_produtos(codigo);
+
+    } while (x == 1);
+
+    
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "rb");
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "wb");
+    //fclose(arquivo_de_alteracao);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+
+    do
+    {
+        // arquivo_de_alteracao = fopen("rer.txt", "ab");
+        if (l.codigo == codigo)
+        {
+
+            a==b;
+           
+        }
+        else
+        {
+            strcpy(e.nome, l.nome);
+            strcpy(e.marca, l.marca);
+            strcpy(e.descricao, l.descricao);
+            e.valor_de_compra = l.valor_de_compra;
+            e.valor_de_venda = l.valor_de_compra;
+            e.qtd = l.qtd;
+            e.codigo = l.codigo;
+        }
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        //fclose(arquivo_de_alteracao);
+
+    } while (!feof(arquivo_de_cadastro_de_produtos));
+
+    fclose(arquivo_de_alterar_produtos);
+    fclose(arquivo_de_cadastro_de_produtos);
+
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "rb");
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "wb");
+    // fclose(arquivo_de_cadastro);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+    do
+    {
+        //arquivo_de_cadastro = fopen("cadastros.txt", "ab");
+        strcpy(e.nome, l.nome);
+        strcpy(e.marca, l.marca);
+        strcpy(e.descricao, l.descricao);
+        e.valor_de_compra = l.valor_de_compra;
+        e.valor_de_venda = l.valor_de_compra;
+        e.qtd = l.qtd;
+        e.codigo = l.codigo;
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+        //fclose(arquivo_de_cadastro);
+    } while (!feof(arquivo_de_alterar_produtos));
+
+    fclose(arquivo_de_cadastro_de_produtos);
+    fclose(arquivo_de_alterar_produtos);
+
+    system("cls");
+    printf("PRODUTO APAGADO COM SUCESSO REALIZADA COM SUCESSO\n\n");
+
+    menu_principal_ou_sair();
+}
+
