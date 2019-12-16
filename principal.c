@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-
+#include <time.h>
+#include <string.h>
+#include <windows.h>
 struct Cadastro
 {
     char nome[50],senha[50];
@@ -37,6 +39,7 @@ void menu_principal_ou_sair();
 void alterar_produto();
 void apagar_produto();
 void fim_de_estoque();
+void sainda_de_produtos();
 
     int main()
 {
@@ -313,7 +316,7 @@ void menu_principal(){
                 cadastro_de_produtos();
                 break;
             case 2:
-
+                sainda_de_produtos();
                 break;
             case 3:
                 consultar_estoque();
@@ -811,9 +814,9 @@ void apagar_produto(){
    
     struct Produtos l;
     struct Produtos e;
-    int codigo, x = 3, qtd,a,b;
+    int codigo, x = 3, qtd,a,b,opp;
    
-
+    
     do
     {
         system("cls");
@@ -940,3 +943,121 @@ void fim_de_estoque(){
             menu_principal_ou_sair();
 }
 
+void sainda_de_produtos(){
+
+    struct Produtos l;
+    struct Produtos e;
+    int codigo,x = 3,qtd,quant,opp;
+    char nome[100],descricao[100],marca[50];
+    float pc,pv,ps;
+
+    do{
+    
+    do
+    {
+        system("cls");
+        printf("SAIDA DE PRODUTOS ARCLINE\n\n");
+
+         if(x==1){
+            printf("PRODUTO NÃO ENCONTRADO\n");
+        }
+
+        printf("CASO DESEJE RETORNAR AO MENU DIGITE 'menu' CASO DESEJE SAIR, DIGITE 'sair'\n\n");
+
+        printf("CODIGO: ");
+        scanf("%d", &codigo);
+        
+
+        x = checar_produtos(codigo);
+
+    } while (x == 1);
+
+    printf("DIGITE A QUANTIDADE DE RETIRADA DESSE PRODUTO: "); 
+    scanf("%d",&quant);
+
+    
+
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "rb");
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "wb");
+    //fclose(arquivo_de_alteracao);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+
+    do
+    {
+        // arquivo_de_alteracao = fopen("rer.txt", "ab");
+        if (l.codigo == codigo)
+        {
+
+            strcpy(e.nome, l.nome);
+            strcpy(e.marca, l.marca);
+            strcpy(e.descricao, l.descricao);
+            e.valor_de_compra = l.valor_de_compra;
+            e.valor_de_venda = l.valor_de_venda;
+            e.qtd = l.qtd - quant;
+            e.codigo = codigo;
+
+            if(e.qtd < 0){
+                printf("QUANTIDADE DE PRODUTO INDISPONIVAL NO ESTOQUE\nDIGITE NOVAMENTE EM INSTANTES");
+                Sleep(3000);
+                sainda_de_produtos();
+            }
+        }
+        else
+        {
+            strcpy(e.nome, l.nome);
+            strcpy(e.marca, l.marca);
+            strcpy(e.descricao, l.descricao);
+            e.valor_de_compra = l.valor_de_compra;
+            e.valor_de_venda = l.valor_de_compra;
+            e.qtd = l.qtd;
+            e.codigo = l.codigo;
+        }
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        //fclose(arquivo_de_alteracao);
+
+    } while (!feof(arquivo_de_cadastro_de_produtos));
+
+    fclose(arquivo_de_alterar_produtos);
+    fclose(arquivo_de_cadastro_de_produtos);
+
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "rb");
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "wb");
+    // fclose(arquivo_de_cadastro);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+    do
+    {
+        //arquivo_de_cadastro = fopen("cadastros.txt", "ab");
+        strcpy(e.nome, l.nome);
+        strcpy(e.marca, l.marca);
+        strcpy(e.descricao, l.descricao);
+        e.valor_de_compra = l.valor_de_compra;
+        e.valor_de_venda = l.valor_de_compra;
+        e.qtd = l.qtd;
+        e.codigo = l.codigo;
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+        //fclose(arquivo_de_cadastro);
+    } while (!feof(arquivo_de_alterar_produtos));
+
+    fclose(arquivo_de_cadastro_de_produtos);
+    fclose(arquivo_de_alterar_produtos);
+
+    system("cls");
+    printf("RETIRADA EFETUADA COM SUCESSO\n\n");
+
+    printf("DIGITE 1 PARA RETIRAR OUTRO PRODUTO\nDIGITE 2 PARA VOLTAR AO MENU\n\nDIGITE AQUI: ");
+    scanf("%d", &opp);
+
+    }while(opp == 1);
+
+    menu_principal();
+
+
+}
