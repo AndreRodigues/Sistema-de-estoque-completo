@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <windows.h>
+
 struct Cadastro
 {
     char nome[50],senha[50];
@@ -40,6 +41,7 @@ void alterar_produto();
 void apagar_produto();
 void fim_de_estoque();
 void sainda_de_produtos();
+void entrada_de_produtos();
 
     int main()
 {
@@ -304,9 +306,10 @@ void menu_principal(){
     printf("| SISTEMA DE ESTOQUE ARCLINE    |\n");
     printf("|____________________________   |\n");
     printf("| DIGITE 1 CADASTRAR PRODUTOS   |\n");
-    printf("| DIGITE 2 SAIDA DE PRODUTOS    |\n");
-    printf("| DIGITE 3 CONSULTAR ESTOQUE    |\n");
-    printf("| DIGITE 4 PARA SAIR DO SISTEMA |");
+    printf("| DIGITE 2 ENTRADA DE PRODUTOS  |\n");
+    printf("| DIGITE 3 SAIDA DE PRODUTOS    |\n");
+    printf("| DIGITE 4 CONSULTAR ESTOQUE    |\n");
+    printf("| DIGITE 5 PARA SAIR DO SISTEMA |");
     printf("\n|_______________________________|\n| DIGITE AQUI: ");
     scanf("%d", &opcao);
 
@@ -316,18 +319,18 @@ void menu_principal(){
                 cadastro_de_produtos();
                 break;
             case 2:
-                sainda_de_produtos();
+                entrada_de_produtos();
                 break;
             case 3:
+                sainda_de_produtos();
+                break;
+                case 4:
                 consultar_estoque();
                 break;
-            case 4:
-                system("cls");
+            case 5:system("cls");
                 printf("SISTEMA ENCERRADO\n\n");
                 exit(0);
-                break;
-            case 5:
-
+                
                 break;
 
             default:
@@ -869,6 +872,7 @@ void apagar_produto(){
         fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
         //fclose(arquivo_de_alteracao);
 
+
     } while (!feof(arquivo_de_cadastro_de_produtos));
 
     fclose(arquivo_de_alterar_produtos);
@@ -947,6 +951,7 @@ void sainda_de_produtos(){
 
     struct Produtos l;
     struct Produtos e;
+    struct Produtos p;
     int codigo,x = 3,qtd,quant,opp;
     char nome[100],descricao[100],marca[50];
     float pc,pv,ps;
@@ -972,7 +977,35 @@ void sainda_de_produtos(){
 
     } while (x == 1);
 
-    printf("DIGITE A QUANTIDADE DE RETIRADA DESSE PRODUTO: "); 
+    arquivo_de_consultar_estoque = fopen("produtos.txt","r");
+
+    fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+    do
+    {
+
+        if (p.codigo == codigo)
+        {
+            
+            printf("\nCODIGO DO PRODUTO: %d", p.codigo);
+            printf("\nNOME DO PRODUTO: %s", p.nome);
+            printf("\nMARCA DO PRODUTO: %s", p.marca);
+            printf("\nDESCRIÇÃO DO PRODUTO: %s", p.descricao);
+            printf("\nVALOR DE COMPRA DO PRODUTO: %.2f", p.valor_de_compra);
+            printf("\nVALOR DE VENDA DO PRODUTO: %.2f", p.valor_de_venda);
+            printf("\nQUANTIDADE DISPONIVEL DO PRODUTO: %d\n\n", p.qtd);
+
+            
+        }
+
+        fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+    } while (!feof(arquivo_de_consultar_estoque));
+    
+        fclose(arquivo_de_consultar_estoque);
+
+
+    printf("\n\nDIGITE A QUANTIDADE DE RETIRADA DESSE PRODUTO: "); 
     scanf("%d",&quant);
 
     
@@ -1061,3 +1094,151 @@ void sainda_de_produtos(){
 
 
 }
+
+void entrada_de_produtos(){
+
+    struct Produtos l;
+    struct Produtos e;
+    struct Produtos p;
+    int codigo,x = 3,qtd,quant,opp;
+    char nome[100],descricao[100],marca[50];
+    float pc,pv,ps;
+
+    do{
+    
+    do
+    {
+        system("cls");
+        printf("ENTRADA DE PRODUTOS ARCLINE\n\n");
+
+         if(x==1){
+            printf("PRODUTO NÃO ENCONTRADO\n");
+        }
+
+        printf("CASO DESEJE RETORNAR AO MENU DIGITE 'menu' CASO DESEJE SAIR, DIGITE 'sair'\n\n");
+
+        printf("CODIGO: ");
+        scanf("%d", &codigo);
+        
+
+        x = checar_produtos(codigo);
+
+    } while (x == 1);
+
+    arquivo_de_consultar_estoque = fopen("produtos.txt","r");
+
+    fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+    do
+    {
+
+        if (p.codigo == codigo)
+        {
+            
+            printf("\nCODIGO DO PRODUTO: %d", p.codigo);
+            printf("\nNOME DO PRODUTO: %s", p.nome);
+            printf("\nMARCA DO PRODUTO: %s", p.marca);
+            printf("\nDESCRIÇÃO DO PRODUTO: %s", p.descricao);
+            printf("\nVALOR DE COMPRA DO PRODUTO: %.2f", p.valor_de_compra);
+            printf("\nVALOR DE VENDA DO PRODUTO: %.2f", p.valor_de_venda);
+            printf("\nQUANTIDADE DISPONIVEL DO PRODUTO: %d\n\n", p.qtd);
+
+            
+        }
+
+        fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
+
+    } while (!feof(arquivo_de_consultar_estoque));
+    
+        fclose(arquivo_de_consultar_estoque);
+
+    printf("\n\nDIGITE A QUANTIDADE A SER ADICIONADA DESSE PRODUTO: "); 
+    scanf("%d",&quant);
+
+    
+
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "rb");
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "wb");
+    //fclose(arquivo_de_alteracao);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+
+    do
+    {
+        // arquivo_de_alteracao = fopen("rer.txt", "ab");
+        if (l.codigo == codigo)
+        {
+
+            strcpy(e.nome, l.nome);
+            strcpy(e.marca, l.marca);
+            strcpy(e.descricao, l.descricao);
+            e.valor_de_compra = l.valor_de_compra;
+            e.valor_de_venda = l.valor_de_venda;
+            e.qtd = l.qtd + quant;
+            e.codigo = codigo;
+
+            if(e.qtd < 0){
+                printf("QUANTIDADE DE PRODUTO INDISPONIVAL NO ESTOQUE\nDIGITE NOVAMENTE EM INSTANTES");
+                Sleep(3000);
+                sainda_de_produtos();
+            }
+        }
+        else
+        {
+            strcpy(e.nome, l.nome);
+            strcpy(e.marca, l.marca);
+            strcpy(e.descricao, l.descricao);
+            e.valor_de_compra = l.valor_de_compra;
+            e.valor_de_venda = l.valor_de_compra;
+            e.qtd = l.qtd;
+            e.codigo = l.codigo;
+        }
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        //fclose(arquivo_de_alteracao);
+
+    } while (!feof(arquivo_de_cadastro_de_produtos));
+
+    fclose(arquivo_de_alterar_produtos);
+    fclose(arquivo_de_cadastro_de_produtos);
+
+    arquivo_de_alterar_produtos = fopen("produtos02.txt", "rb");
+    arquivo_de_cadastro_de_produtos = fopen("produtos.txt", "wb");
+    // fclose(arquivo_de_cadastro);
+
+    fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+    do
+    {
+        //arquivo_de_cadastro = fopen("cadastros.txt", "ab");
+        strcpy(e.nome, l.nome);
+        strcpy(e.marca, l.marca);
+        strcpy(e.descricao, l.descricao);
+        e.valor_de_compra = l.valor_de_compra;
+        e.valor_de_venda = l.valor_de_compra;
+        e.qtd = l.qtd;
+        e.codigo = l.codigo;
+
+        fwrite(&e, sizeof(struct Produtos), 1, arquivo_de_cadastro_de_produtos);
+        fread(&l, sizeof(struct Produtos), 1, arquivo_de_alterar_produtos);
+
+        //fclose(arquivo_de_cadastro);
+    } while (!feof(arquivo_de_alterar_produtos));
+
+    fclose(arquivo_de_cadastro_de_produtos);
+    fclose(arquivo_de_alterar_produtos);
+
+    system("cls");
+    printf("ADIÇÃO EFETUADA COM SUCESSO\n\n");
+
+    printf("DIGITE 1 PARA RETIRAR OUTRO PRODUTO\nDIGITE 2 PARA VOLTAR AO MENU\n\nDIGITE AQUI: ");
+    scanf("%d", &opp);
+
+    }while(opp == 1);
+
+    menu_principal();
+
+
+}
+
