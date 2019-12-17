@@ -24,6 +24,7 @@ FILE *arquivo_de_alteracao;
 FILE *arquivo_de_cadastro_de_produtos;
 FILE *arquivo_de_consultar_estoque;
 FILE *arquivo_de_alterar_produtos;
+FILE *arquivo_de_relatorio;
 
 void menu();//menu inicial do sistema
 void menu_principal();//menu principal do sistema
@@ -996,6 +997,8 @@ void sainda_de_produtos(){
             printf("\nQUANTIDADE DISPONIVEL DO PRODUTO: %d\n\n", p.qtd);
 
             
+
+            
         }
 
         fread(&p, sizeof(struct Produtos), 1, arquivo_de_consultar_estoque);
@@ -1029,6 +1032,12 @@ void sainda_de_produtos(){
             e.valor_de_venda = l.valor_de_venda;
             e.qtd = l.qtd - quant;
             e.codigo = codigo;
+
+            arquivo_de_relatorio = fopen("relatorio.txt","a");
+
+            fprintf(arquivo_de_relatorio,"\nstatus: saida | produto: %s | quantidade: %d | valor: %.2f | data: %s",e.nome,quant,e.valor_de_venda * quant,__DATE__);
+
+            fclose(arquivo_de_relatorio);
 
             if(e.qtd < 0){
                 printf("QUANTIDADE DE PRODUTO INDISPONIVAL NO ESTOQUE\nDIGITE NOVAMENTE EM INSTANTES");
@@ -1175,7 +1184,14 @@ void entrada_de_produtos(){
             e.valor_de_compra = l.valor_de_compra;
             e.valor_de_venda = l.valor_de_venda;
             e.qtd = l.qtd + quant;
+            
             e.codigo = codigo;
+
+            arquivo_de_relatorio = fopen("relatorio.txt","a");
+
+            fprintf(arquivo_de_relatorio,"\nstatus: entrada | produto: %s | quantidade: %d | valor: %.2f | data: %s",e.nome,quant,e.valor_de_venda * quant,__DATE__);
+
+            fclose(arquivo_de_relatorio);
 
             if(e.qtd < 0){
                 printf("QUANTIDADE DE PRODUTO INDISPONIVAL NO ESTOQUE\nDIGITE NOVAMENTE EM INSTANTES");

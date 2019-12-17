@@ -1,0 +1,4 @@
+
+status: entrada | produto: blusa feminina | quantidade: 10 | valor: 215,00 | data: Dec 16 2019
+status: saida | produto: blusa feminina | quantidade: 5 | valor: 50,00 | data: Dec 16 2019
+status: entrada | produto: blusa feminina | quantidade: 12 | valor: 120,00 | data: Dec 16 2019
